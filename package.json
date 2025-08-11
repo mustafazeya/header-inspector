@@ -1,0 +1,34 @@
+{
+  "name": "header-inspector",
+  "version": "1.0.0",
+  "description": "Tiny service to inspect common and custom HTTP headers",
+  "main": "server.js",
+  "type": "commonjs",
+  "config": {
+    "dockerImage": "theflawedwarrior/header-inspector"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "NODE_ENV=development nodemon server.js",
+    "check": "node -e \"require('./app.js'); console.log('syntax ok')\"",
+    "docker:ensure-builder": "docker buildx create --name headerinspectorbuilder --use --driver docker-container 2>/dev/null || docker buildx use headerinspectorbuilder && docker buildx inspect --bootstrap headerinspectorbuilder",
+    "docker:publish": "npm run docker:ensure-builder && docker buildx build --platform linux/amd64,linux/arm64 -t ${DOCKER_IMAGE:-$npm_package_config_dockerImage}:latest --push .",
+    "docker:build:amd64:local": "npm run docker:ensure-builder && docker buildx build --platform linux/amd64 -t ${DOCKER_IMAGE:-$npm_package_config_dockerImage}:amd64 --load .",
+    "docker:build:arm64:local": "npm run docker:ensure-builder && docker buildx build --platform linux/arm64 -t ${DOCKER_IMAGE:-$npm_package_config_dockerImage}:arm64 --load ."
+  },
+  "keywords": [
+    "headers",
+    "x-forwarded-for",
+    "x-forwarded-host",
+    "inspector",
+    "debug"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
